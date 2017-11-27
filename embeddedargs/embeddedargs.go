@@ -13,7 +13,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/interarticle/embeddedzip"
+	"github.com/interarticle/goembed/embeddedzip"
 )
 
 const (
