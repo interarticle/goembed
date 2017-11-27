@@ -54,10 +54,15 @@ func (f *zipFooter) CalculateStartOffset(totalLength int64) (int64, error) {
 	return totalLength - zipSize, nil
 }
 
+type ZipReaderCloser struct {
+	*zip.Reader
+	io.Closer
+}
+
 // OpenEmbeddedZip opens and returns the zip file embedded in the current go
 // executable. If no such embedded zip file exists, ErrNoFooter should be
 // returned.
-func OpenEmbeddedZip() (*zip.Reader, error) {
+func OpenEmbeddedZip() (*ZipReaderCloser, error) {
 	f, err := os.Open(os.Args[0])
 	if err != nil {
 		return nil, err
@@ -96,5 +101,6 @@ func OpenEmbeddedZip() (*zip.Reader, error) {
 	}
 
 	reader := io.NewSectionReader(f, startOffset, footer.FileSize())
-	return zip.NewReader(reader, footer.FileSize())
+	zipReader, err := zip.NewReader(reader, footer.FileSize())
+	return &ZipReaderCloser{zipReader, f}, nil
 }
