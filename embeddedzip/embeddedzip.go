@@ -63,7 +63,11 @@ type ZipReaderCloser struct {
 // executable. If no such embedded zip file exists, ErrNoFooter should be
 // returned.
 func OpenEmbeddedZip() (*ZipReaderCloser, error) {
-	f, err := os.Open(os.Args[0])
+	exeP, err := os.Executable()
+	if err != nil {
+		return nil, err
+	}
+	f, err := os.Open(exeP)
 	if err != nil {
 		return nil, err
 	}
